@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&family=Poppins:wght@600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #252525;
+}
+
+.wrapper {
+    width: 105vmin;
+    height: 105vmin;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: center;
+    background: #101c30;
+    border-radius: 50px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.game-details {
+    color: #d4dce9;
+    font-weight: 600;
+    font-size: 1.8rem;
+    padding: 20px 27px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.play-board {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    background: #23304e;
+    grid-template: repeat(30, 1fr) / repeat(30, 1fr);
+}
+
+.play-board .food {
+    background: #ff003d;
+    border-radius: 5px;
+}
+
+.play-board .head {
+    background: #60cbff;
+    border-radius: 5px;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+}
+
+.controls i {
+    padding: 25px 0;
+    text-align: center;
+    font-size: 2rem;
+    color: #b8c6dc;
+    width: calc(100% / 4);
+    cursor: pointer;
+    border-right: 1px solid #171b26;
+    transition: transform 0.2s ease-in-out;
+}
+
+.controls i:hover {
+    transform: scale(1.1);
+    background-color: #60cbff;
+    color: #fff;
+}
+
+@media screen and (max-width: 800px) {
+    .wrapper {
+        width: 90vmin;
+        height: 115vmin;
+    }
+
+    .game-details {
+        font-size: 1rem;
+        padding: 15px 27px;
+    }
+
+    .controls {
+        display: flex;
+    }
+
+    .controls i {
+        padding: 15px 0;
+        font-size: 1rem;
+    }
+}
+
