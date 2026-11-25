@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+    margin: 0;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #0b100e;
+    color: #ecf4ef;
+    overflow-x: hidden;
+  }
+}
+
+/* Subtle architectural dot matrix + atmospheric forest vignette */
+.arcade-backdrop {
+  background-color: #0b100e;
+  background-image:
+    radial-gradient(60% 45% at 50% 0%, rgba(31, 66, 48, 0.34) 0%, rgba(11, 16, 14, 0) 75%),
+    radial-gradient(45% 40% at 85% 85%, rgba(44, 230, 214, 0.06) 0%, rgba(11, 16, 14, 0) 70%),
+    radial-gradient(rgba(154, 214, 178, 0.08) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
+}
+
+.surface-card {
+  background-color: #121b17;
+  border: 1px solid #22352c;
+  box-shadow: 0 22px 50px -20px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
