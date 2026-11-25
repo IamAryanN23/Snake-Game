@@ -4,7 +4,7 @@ import {
   createInitialState,
   enqueueDirection,
   getStepIntervalMs,
-  interpolatePoint,
+  interpolateWrappedPoint,
   setPaused,
   stepGame,
   toSnapshot,
@@ -420,7 +420,13 @@ export class SnakeScene extends Phaser.Scene {
 
     const points = snake.map((seg, idx) => {
       const prev = previousSnake[idx] ?? seg
-      const interpolated = interpolatePoint(prev, seg, alpha)
+      const interpolated = interpolateWrappedPoint(
+        prev,
+        seg,
+        alpha,
+        this.engineState.gridWidth,
+        this.engineState.gridHeight,
+      )
       return {
         x: (interpolated.x + 0.5) * CELL_SIZE,
         y: (interpolated.y + 0.5) * CELL_SIZE,
@@ -441,8 +447,13 @@ export class SnakeScene extends Phaser.Scene {
 
       if (i > 0) {
         const next = points[i - 1]
-        g.lineStyle(radius * 2, color, 1)
-        g.lineBetween(curr.x, curr.y, next.x, next.y)
+        const acrossWrappedEdge =
+          Math.abs(curr.x - next.x) > CELL_SIZE * 1.5 ||
+          Math.abs(curr.y - next.y) > CELL_SIZE * 1.5
+        if (!acrossWrappedEdge) {
+          g.lineStyle(radius * 2, color, 1)
+          g.lineBetween(curr.x, curr.y, next.x, next.y)
+        }
       }
 
       g.fillStyle(color, 1)

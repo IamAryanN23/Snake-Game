@@ -5,6 +5,7 @@ import {
   getSpeedLevel,
   getStepIntervalMs,
   interpolatePoint,
+  interpolateWrappedPoint,
   setPaused,
   spawnFood,
   stepGame,
@@ -100,22 +101,121 @@ describe('snakeEngine', () => {
     expect(spawnFood(2, 2, [...snake, { x: 1, y: 1 }], obstacles, () => 0)).toBeNull()
   })
 
-  it('detects wall collisions accurately', () => {
+  it('wraps multi-segment snake cleanly across all four board edges', () => {
     const base = createInitialState({ gridWidth: 6, gridHeight: 6 }, () => 0)
-    const atRightWall: EngineState = {
+
+    // Right -> Left
+    const rightWrap = stepGame({
       ...base,
       snake: [
         { x: 5, y: 2 },
         { x: 4, y: 2 },
         { x: 3, y: 2 },
+        { x: 2, y: 2 },
       ],
       direction: 'right',
-    }
+      food: { x: 0, y: 0 },
+    })
+    expect(rightWrap.ended).toBe(false)
+    expect(rightWrap.state.status).toBe('playing')
+    expect(rightWrap.state.snake).toEqual([
+      { x: 0, y: 2 },
+      { x: 5, y: 2 },
+      { x: 4, y: 2 },
+      { x: 3, y: 2 },
+    ])
 
-    const { state, ended } = stepGame(atRightWall)
-    expect(ended).toBe(true)
-    expect(state.status).toBe('gameover')
-    expect(state.lossReason).toBe('wall')
+    // Left -> Right (including second tick while straddling edge)
+    const leftWrap1 = stepGame({
+      ...base,
+      snake: [
+        { x: 0, y: 3 },
+        { x: 1, y: 3 },
+        { x: 2, y: 3 },
+        { x: 3, y: 3 },
+      ],
+      direction: 'left',
+      food: { x: 0, y: 0 },
+    })
+    expect(leftWrap1.ended).toBe(false)
+    expect(leftWrap1.state.snake[0]).toEqual({ x: 5, y: 3 })
+    const leftWrap2 = stepGame(leftWrap1.state)
+    expect(leftWrap2.ended).toBe(false)
+    expect(leftWrap2.state.snake).toEqual([
+      { x: 4, y: 3 },
+      { x: 5, y: 3 },
+      { x: 0, y: 3 },
+      { x: 1, y: 3 },
+    ])
+
+    // Top -> Bottom
+    const topWrap = stepGame({
+      ...base,
+      snake: [
+        { x: 2, y: 0 },
+        { x: 2, y: 1 },
+        { x: 2, y: 2 },
+      ],
+      direction: 'up',
+      food: { x: 0, y: 0 },
+    })
+    expect(topWrap.ended).toBe(false)
+    expect(topWrap.state.snake[0]).toEqual({ x: 2, y: 5 })
+
+    // Bottom -> Top
+    const bottomWrap = stepGame({
+      ...base,
+      snake: [
+        { x: 4, y: 5 },
+        { x: 4, y: 4 },
+        { x: 4, y: 3 },
+      ],
+      direction: 'down',
+      food: { x: 0, y: 0 },
+    })
+    expect(bottomWrap.ended).toBe(false)
+    expect(bottomWrap.state.snake[0]).toEqual({ x: 4, y: 0 })
+  })
+
+  it('detects self-collision and edge food collection across wrapped boundaries', () => {
+    const base = createInitialState({ gridWidth: 6, gridHeight: 6, speedPreset: 'standard' }, () => 0)
+
+    // Wrapping from right edge into own body at left edge causes self-collision
+    const wrapSelfHit = stepGame({
+      ...base,
+      snake: [
+        { x: 5, y: 2 },
+        { x: 4, y: 2 },
+        { x: 4, y: 1 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 },
+        { x: 0, y: 3 },
+      ],
+      direction: 'right',
+      food: { x: 3, y: 3 },
+    })
+    expect(wrapSelfHit.ended).toBe(true)
+    expect(wrapSelfHit.state.status).toBe('gameover')
+    expect(wrapSelfHit.state.lossReason).toBe('self')
+
+    // Wrapping onto food placed at the opposite edge eats it and grows
+    const wrapEat = stepGame(
+      {
+        ...base,
+        snake: [
+          { x: 0, y: 5 },
+          { x: 1, y: 5 },
+          { x: 2, y: 5 },
+        ],
+        direction: 'down',
+        food: { x: 0, y: 0 },
+      },
+      () => 0,
+    )
+    expect(wrapEat.ateFood).toBe(true)
+    expect(wrapEat.ended).toBe(false)
+    expect(wrapEat.state.snake[0]).toEqual({ x: 0, y: 0 })
+    expect(wrapEat.state.snake).toHaveLength(4)
   })
 
   it('detects self collisions while allowing movement into a vacating tail tip', () => {
@@ -166,6 +266,14 @@ describe('snakeEngine', () => {
 
     expect(interpolatePoint({ x: 2, y: 4 }, { x: 3, y: 4 }, 0.5)).toEqual({ x: 2.5, y: 4 })
     expect(interpolatePoint({ x: 2, y: 4 }, { x: 3, y: 4 }, 2)).toEqual({ x: 3, y: 4 })
+    expect(interpolateWrappedPoint({ x: 19, y: 4 }, { x: 0, y: 4 }, 0.25, 20, 20)).toEqual({
+      x: 19.25,
+      y: 4,
+    })
+    expect(interpolateWrappedPoint({ x: 19, y: 4 }, { x: 0, y: 4 }, 0.75, 20, 20)).toEqual({
+      x: -0.25,
+      y: 4,
+    })
 
     const base = createInitialState({ speedPreset: 'turbo' }, () => 0)
     const paused = setPaused(base, true)

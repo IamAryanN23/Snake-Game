@@ -26,10 +26,6 @@ export function isOppositeDirection(a: Direction, b: Direction): boolean {
   return OPPOSITE_DIRECTION[a] === b
 }
 
-export function isInsideGrid(point: GridPoint, gridWidth: number, gridHeight: number): boolean {
-  return point.x >= 0 && point.x < gridWidth && point.y >= 0 && point.y < gridHeight
-}
-
 /**
  * Computes the fixed-timestep interval (ms) for the given preset and food count.
  */
@@ -164,29 +160,12 @@ export function stepGame(state: EngineState, rng: RandomFn = Math.random): StepO
   const vector = DIRECTION_VECTORS[activeDirection]
   const currentHead = state.snake[0]
   const nextHead: GridPoint = {
-    x: currentHead.x + vector.x,
-    y: currentHead.y + vector.y,
+    x: (currentHead.x + vector.x + state.gridWidth) % state.gridWidth,
+    y: (currentHead.y + vector.y + state.gridHeight) % state.gridHeight,
   }
 
   const stepMs = getStepIntervalMs(state.speedPreset, state.foodEaten)
   const nextElapsedMs = state.elapsedMs + stepMs
-
-  if (!isInsideGrid(nextHead, state.gridWidth, state.gridHeight)) {
-    return {
-      state: {
-        ...state,
-        direction: activeDirection,
-        directionQueue: remainingQueue,
-        previousSnake: state.snake,
-        status: 'gameover',
-        lossReason: 'wall',
-        elapsedMs: nextElapsedMs,
-      },
-      ateFood: false,
-      turned,
-      ended: true,
-    }
-  }
 
   for (const obstacle of state.obstacles) {
     if (pointsEqual(nextHead, obstacle)) {
@@ -289,6 +268,34 @@ export function interpolatePoint(from: GridPoint, to: GridPoint, alpha: number):
   return {
     x: from.x + (to.x - from.x) * clamped,
     y: from.y + (to.y - from.y) * clamped,
+  }
+}
+
+function interpolateWrappedAxis(from: number, to: number, alpha: number, size: number): number {
+  const delta = to - from
+  if (Math.abs(delta) <= 1) {
+    return from + delta * alpha
+  }
+  // Segment wrapped across an edge: slide smoothly out one edge and in from the opposite edge.
+  const step = delta < 0 ? alpha : -alpha
+  const raw = from + step
+  if (alpha < 0.5) {
+    return raw
+  }
+  return delta < 0 ? raw - size : raw + size
+}
+
+export function interpolateWrappedPoint(
+  from: GridPoint,
+  to: GridPoint,
+  alpha: number,
+  gridWidth: number,
+  gridHeight: number,
+): GridPoint {
+  const clamped = Math.max(0, Math.min(1, alpha))
+  return {
+    x: interpolateWrappedAxis(from.x, to.x, clamped, gridWidth),
+    y: interpolateWrappedAxis(from.y, to.y, clamped, gridHeight),
   }
 }
 

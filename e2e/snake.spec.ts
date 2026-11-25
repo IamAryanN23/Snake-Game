@@ -6,8 +6,8 @@ test.describe('Modern Snake Arcade - Milestone 1', () => {
   }) => {
     await page.goto('/')
 
-    await expect(page.getByRole('heading', { name: /VERDANT\s+SNAKE/i })).toBeVisible()
-    const playButton = page.getByRole('button', { name: /Play Classic/i })
+    await expect(page.getByRole('heading', { name: /^SNAKE$/i })).toBeVisible()
+    const playButton = page.getByRole('button', { name: /^PLAY$/i })
     await expect(playButton).toBeVisible()
 
     // Select Turbo preset and verify it persists after reload
@@ -17,13 +17,13 @@ test.describe('Modern Snake Arcade - Milestone 1', () => {
     await page.reload()
     await expect(page.getByRole('radio', { name: /Turbo/i })).toHaveAttribute('aria-checked', 'true')
 
-    // Open and toggle settings
-    await page.getByRole('button', { name: /Open settings/i }).click()
-    await expect(page.getByRole('dialog', { name: /Arcade Settings/i })).toBeVisible()
+    // Open and close settings
+    await page.getByRole('button', { name: /Settings/i }).click()
+    await expect(page.getByRole('dialog', { name: /SETTINGS/i })).toBeVisible()
     await page.getByRole('button', { name: /Close settings/i }).click()
 
     // Launch game and verify Phaser canvas + HUD
-    await page.getByRole('button', { name: /Play Classic/i }).click()
+    await page.getByRole('button', { name: /^PLAY$/i }).click()
     const canvas = page.locator('[data-testid="phaser-board"] canvas')
     await expect(canvas).toBeVisible()
     await expect(page.getByTestId('hud-score')).toHaveText('0')
@@ -32,20 +32,19 @@ test.describe('Modern Snake Arcade - Milestone 1', () => {
     // Keyboard controls: steer up and pause via Space
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('Space')
-    await expect(page.getByRole('heading', { name: /Take a Breather/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /^PAUSED$/i })).toBeVisible()
 
-    // Resume via button
-    await page.getByRole('button', { name: /^Resume$/i }).click()
-    await expect(page.getByRole('heading', { name: /Take a Breather/i })).toBeHidden()
+    // Resume via button and verify Turbo snake wraps across edges without wall game-over
+    await page.getByRole('button', { name: /^RESUME$/i }).click()
+    await expect(page.getByRole('heading', { name: /^PAUSED$/i })).toBeHidden()
+    await page.waitForTimeout(2300)
+    await expect(page.getByRole('heading', { name: /^GAME OVER$/i })).toBeHidden()
 
-    // Let Turbo snake hit the top/side wall (at 90ms/tick, 20 cells max is <2.2s)
-    await expect(page.getByRole('heading', { name: /Run Complete/i })).toBeVisible({
-      timeout: 5000,
-    })
-
-    // Play Again resets cleanly
-    await page.getByRole('button', { name: /Play Again/i }).click()
-    await expect(page.getByRole('heading', { name: /Run Complete/i })).toBeHidden()
+    // Pause and restart cleanly
+    await page.keyboard.press('Space')
+    await expect(page.getByRole('heading', { name: /^PAUSED$/i })).toBeVisible()
+    await page.getByRole('button', { name: /^PLAY AGAIN$/i }).click()
+    await expect(page.getByRole('heading', { name: /^PAUSED$/i })).toBeHidden()
     await expect(page.getByTestId('hud-score')).toHaveText('0')
   })
 
@@ -55,7 +54,7 @@ test.describe('Modern Snake Arcade - Milestone 1', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto('/')
 
-    await page.getByRole('button', { name: /Play Classic/i }).click()
+    await page.getByRole('button', { name: /^PLAY$/i }).click()
     await expect(page.locator('[data-testid="phaser-board"] canvas')).toBeVisible()
     await expect(page.getByTestId('touch-controls')).toBeVisible()
 

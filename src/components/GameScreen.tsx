@@ -123,11 +123,11 @@ export function GameScreen() {
 
       <TouchControls mode={showTouchControls} onDirection={handleDirection} />
 
-      <div className="hidden items-center gap-4 text-xs text-[#6f867a] md:flex">
-        <span>Arrows / WASD to steer</span>
-        <span aria-hidden="true">•</span>
-        <span>Space / P to pause</span>
-        <span aria-hidden="true">•</span>
+      <div className="hidden items-center gap-4 text-xs text-[#687e72] md:flex">
+        <span>Arrows / WASD</span>
+        <span aria-hidden="true">·</span>
+        <span>Space to pause</span>
+        <span aria-hidden="true">·</span>
         <span>R to restart</span>
       </div>
     </motion.main>

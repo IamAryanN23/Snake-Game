@@ -1,4 +1,3 @@
-import { SPEED_PRESETS } from '../game/engine/constants.ts'
 import { useGameStore } from '../state/useGameStore.ts'
 import {
   BackIcon,
@@ -29,9 +28,9 @@ export function GameHud({ onTogglePause, onRestart, onExitMenu }: GameHudProps) 
 
   return (
     <header className="w-full">
-      <div className="surface-card flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3 sm:px-5">
-        {/* Left: Back & Mode Label */}
-        <div className="flex items-center gap-2.5">
+      <div className="surface-card flex items-center justify-between gap-3 rounded-2xl px-4 py-3 sm:px-5">
+        {/* Left: Back & Title */}
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={onExitMenu}
@@ -40,54 +39,41 @@ export function GameHud({ onTogglePause, onRestart, onExitMenu }: GameHudProps) 
           >
             <BackIcon className="h-4.5 w-4.5" />
           </button>
-          <div>
-            <div className="text-sm font-semibold tracking-tight text-[#f0f8f3]">Classic</div>
-            <div className="font-mono text-[11px] text-[#7b9487]">
-              {SPEED_PRESETS[settings.speedPreset].label} • Lv {hud.speedLevel}
-            </div>
-          </div>
+          <span className="hidden text-sm font-bold tracking-tight text-[#f0f8f3] sm:inline">
+            SNAKE
+          </span>
         </div>
 
-        {/* Center: Live Telemetry */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          <div>
-            <div className="font-mono text-[10px] tracking-[0.16em] text-[#799184] uppercase">
-              Score
-            </div>
-            <div
+        {/* Center: Prominent Score & Best */}
+        <div className="flex items-baseline gap-6 sm:gap-8">
+          <div className="flex items-baseline gap-2">
+            <span className="text-[11px] font-medium text-[#799184]">SCORE</span>
+            <span
               data-testid="hud-score"
-              className="font-mono text-xl font-bold text-[#8ef743] tabular-nums sm:text-2xl"
+              className="text-2xl font-bold tracking-tight text-[#8ef743] tabular-nums sm:text-3xl"
             >
               {hud.score}
-            </div>
+            </span>
           </div>
 
-          <div className="h-7 w-px bg-[#22352c]" aria-hidden="true" />
-
-          <div>
-            <div className="font-mono text-[10px] tracking-[0.16em] text-[#799184] uppercase">
-              Best
-            </div>
-            <div
+          <div className="flex items-baseline gap-2">
+            <span className="text-[11px] font-medium text-[#799184]">BEST</span>
+            <span
               data-testid="hud-best"
-              className="font-mono text-xl font-bold text-[#eef6f1] tabular-nums sm:text-2xl"
+              className="text-2xl font-bold tracking-tight text-[#eef6f1] tabular-nums sm:text-3xl"
             >
               {displayBest}
-            </div>
+            </span>
           </div>
 
-          <div className="hidden h-7 w-px bg-[#22352c] sm:block" aria-hidden="true" />
-
-          <div className="hidden sm:block">
-            <div className="font-mono text-[10px] tracking-[0.16em] text-[#799184] uppercase">
-              Length
-            </div>
-            <div
+          <div className="hidden items-baseline gap-2 sm:flex">
+            <span className="text-[11px] font-medium text-[#799184]">Length</span>
+            <span
               data-testid="hud-length"
-              className="font-mono text-xl font-bold text-[#2ce6d6] tabular-nums sm:text-2xl"
+              className="text-xl font-bold tracking-tight text-[#2ce6d6] tabular-nums"
             >
               {hud.length}
-            </div>
+            </span>
           </div>
         </div>
 
@@ -130,7 +116,7 @@ export function GameHud({ onTogglePause, onRestart, onExitMenu }: GameHudProps) 
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
-            aria-label="Open settings"
+            aria-label="Settings"
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#24382f] bg-[#0f1714] text-[#cbe0d4] transition hover:border-[#2ce6d6]/60 hover:text-white focus-visible:outline-2 focus-visible:outline-[#2ce6d6]"
           >
             <SettingsIcon className="h-4 w-4" />

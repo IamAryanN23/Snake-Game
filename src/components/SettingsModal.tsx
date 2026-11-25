@@ -47,17 +47,12 @@ export function SettingsModal() {
             exit={{ opacity: 0, scale: 0.96, y: 6 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="surface-card w-full max-w-md rounded-3xl p-6"
+            className="surface-card w-full max-w-md rounded-3xl p-6 sm:p-7"
           >
             <div className="flex items-center justify-between">
-              <div>
-                <div className="font-mono text-[11px] tracking-[0.18em] text-[#2ce6d6] uppercase">
-                  Preferences
-                </div>
-                <h2 id="settings-title" className="mt-0.5 text-xl font-bold text-[#f3faf5]">
-                  Arcade Settings
-                </h2>
-              </div>
+              <h2 id="settings-title" className="text-2xl font-bold tracking-tight text-[#f3faf5]">
+                SETTINGS
+              </h2>
 
               <button
                 type="button"
@@ -70,9 +65,9 @@ export function SettingsModal() {
             </div>
 
             <div className="mt-6 space-y-5">
-              {/* Speed Preset */}
+              {/* Speed */}
               <div>
-                <div className="mb-2 text-xs font-medium text-[#a3bab0]">Game Pace</div>
+                <div className="mb-2 text-xs font-medium text-[#95ada0]">Speed</div>
                 <div className="grid grid-cols-3 gap-2">
                   {PRESET_ORDER.map((id) => {
                     const active = settings.speedPreset === id
@@ -81,7 +76,7 @@ export function SettingsModal() {
                         key={id}
                         type="button"
                         onClick={() => updateSettings({ speedPreset: id })}
-                        className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+                        className={`rounded-xl border px-3 py-2.5 text-xs font-semibold transition ${
                           active
                             ? 'border-[#8ef743]/70 bg-[#1a2c22] text-[#8ef743]'
                             : 'border-[#22352c] bg-[#0f1714] text-[#95ada0] hover:text-white'
@@ -95,12 +90,9 @@ export function SettingsModal() {
               </div>
 
               {/* Sound & Volume */}
-              <div className="rounded-2xl border border-[#22352c] bg-[#0e1613] p-4">
+              <div className="rounded-2xl border border-[#1f3128] bg-[#0e1613] p-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-medium text-[#ecf4ef]">Sound Effects</div>
-                    <div className="text-xs text-[#7c9487]">WebAudio feedback via Howler</div>
-                  </div>
+                  <span className="text-sm font-medium text-[#ecf4ef]">Sound</span>
                   <button
                     type="button"
                     role="switch"
@@ -121,9 +113,7 @@ export function SettingsModal() {
                 <div className="mt-4">
                   <div className="mb-1.5 flex items-center justify-between text-xs text-[#8da598]">
                     <span>Volume</span>
-                    <span className="font-mono tabular-nums">
-                      {Math.round(settings.volume * 100)}%
-                    </span>
+                    <span className="tabular-nums">{Math.round(settings.volume * 100)}%</span>
                   </div>
                   <input
                     type="range"
@@ -138,12 +128,9 @@ export function SettingsModal() {
                 </div>
               </div>
 
-              {/* Board Grid */}
-              <div className="flex items-center justify-between rounded-2xl border border-[#22352c] bg-[#0e1613] p-4">
-                <div>
-                  <div className="text-sm font-medium text-[#ecf4ef]">Grid Lines</div>
-                  <div className="text-xs text-[#7c9487]">Subtle 20×20 alignment guides</div>
-                </div>
+              {/* Grid */}
+              <div className="flex items-center justify-between rounded-2xl border border-[#1f3128] bg-[#0e1613] p-4">
+                <span className="text-sm font-medium text-[#ecf4ef]">Grid</span>
                 <button
                   type="button"
                   role="switch"
@@ -161,11 +148,9 @@ export function SettingsModal() {
                 </button>
               </div>
 
-              {/* On-Screen D-Pad */}
+              {/* Touch Controls */}
               <div>
-                <div className="mb-2 text-xs font-medium text-[#a3bab0]">
-                  On-Screen Touch D-Pad
-                </div>
+                <div className="mb-2 text-xs font-medium text-[#95ada0]">Touch Controls</div>
                 <div className="grid grid-cols-3 gap-2">
                   {TOUCH_MODES.map((mode) => {
                     const active = settings.showTouchControls === mode.id
@@ -187,16 +172,16 @@ export function SettingsModal() {
                 </div>
               </div>
 
-              {/* Reset Stats */}
+              {/* Reset Best */}
               <div className="flex items-center justify-between border-t border-[#1e2f27] pt-4">
-                <span className="text-xs text-[#7d9588]">Saved Records</span>
+                <span className="text-xs text-[#7d9588]">High Scores</span>
                 {!confirmReset ? (
                   <button
                     type="button"
                     onClick={() => setConfirmReset(true)}
                     className="rounded-lg px-3 py-1.5 text-xs font-medium text-[#ff8566] transition hover:bg-[#ff6b4a]/10"
                   >
-                    Reset High Scores
+                    Reset
                   </button>
                 ) : (
                   <div className="flex items-center gap-2">
@@ -208,7 +193,7 @@ export function SettingsModal() {
                       }}
                       className="rounded-lg bg-[#ff6b4a] px-3 py-1.5 text-xs font-semibold text-[#0b100e]"
                     >
-                      Confirm Reset
+                      Confirm
                     </button>
                     <button
                       type="button"
